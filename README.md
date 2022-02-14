@@ -22,6 +22,10 @@ Here is an example of a completed game where the word was "ulcer":
 
 The program uses an algorithm to rank guesses. The algorithm analyzes each potential guess, assigning it a value based on how good of a guess it is. This value is determined by the following equation:
 
+![](img/equation.PNG "Equation")
+
+<!-- LaTeX version of the equation:
+
 $\sum_{i=1}^{5} P(Y_i) * ELIM(Y_i) + P(G_i) * ELIM(G_i) + P(B_i)*ELIM(B_i)$
 
 where 
@@ -30,6 +34,8 @@ where
 * $Y_i$ is the event where letter $i$ is yellow
 * $G_i$ is the event where letter $i$ is yellow
 * $B_i$ is the event where letter $i$ is gray
+
+--!>
 
 Once each word is assigned a value based on this equation, the words are then sorted in descending order based on their value. This leaves the words likely to lead to the greatest advantage for the player at the top of the list.
 
