@@ -35,7 +35,7 @@ where
 * $G_i$ is the event where letter $i$ is yellow
 * $B_i$ is the event where letter $i$ is gray
 
---!>
+-->
 
 Once each word is assigned a value based on this equation, the words are then sorted in descending order based on their value. This leaves the words likely to lead to the greatest advantage for the player at the top of the list.
 
