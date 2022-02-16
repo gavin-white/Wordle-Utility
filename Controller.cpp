@@ -27,6 +27,7 @@ void wordleUtilController(std::string filename) {
         std::cout << "How many options for guesses would you like to see?\n";   
 
         std::string line;
+        std::string flag;
         std::cout << "-----\n";
         getline(std::cin, line);
         std::cout << "-----\n";
@@ -36,13 +37,31 @@ void wordleUtilController(std::string filename) {
             std::cout << "Error: expected an integer number for the number of guesses\n";
             continue;
         }
-
-        std::vector<std::pair<std::string, bool>> options = solver.getAllOptions(n);
+        ss >> flag;
+        std::vector<std::pair<std::string, bool>> options;
+        if (flag == "-a") {
+            options = solver.getAllOptions(n);
+        } else if (flag == "-v") {
+            options = solver.getValidOptions(n);
+        } else {
+            std::cout << "Invalid flag: " << flag << std::endl;
+            continue;
+        }
         for (auto it = options.begin(); it != options.end(); it++) {
             std::cout << it->first << (it->second ? " (valid)" : " (invalid") << std::endl;
         }
-
-        solver.takeGuess("tares", std::vector<int>({0, 0, 0, 0, 0}));
+        
+        std::string guess;
+        int num;
+        std::vector<int> feedback;
+        getline(std::cin, line);
+        ss = std::stringstream(line);
+        ss >> guess;
+        for (int i = 0; i < 5; i++) {
+            ss >> num;
+            feedback.push_back(num);
+        }
+        solver.takeGuess(guess, feedback);
 
     } while (true);
 }

@@ -58,23 +58,25 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
     if (feedback.size() != numLetters) {
         throw std::invalid_argument("Feedback did not contain exactly 5 numbers.");
     }
+
+    availableOptions.erase(guessInOptions);
+    validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
+
     for (int i = 0; i < numLetters; i++) {
         switch (feedback[i]) {
             case 0:
                 for (int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j].find(guess[i]) != std::string::npos && validOptions[j].find_first_of(guess[i]) == validOptions[j].find_last_of(guess[i])) {
-                        validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
+                        validOptions.erase(validOptions.begin() + j);
                         j--;
                     }
-                    std:: cout << j << std::endl;
                 }
                 break;
             case 1: 
                 for (int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j][i] == guess[i]
-                        || std::find(validOptions[j].begin(),
-                         validOptions[j].end(), guess[i]) == validOptions[j].end()) {
-                        validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
+                        || validOptions[j].find(guess[i]) == std::string::npos) {
+                        validOptions.erase(validOptions.begin() + j);
                         j--;
                     }
                 }
@@ -82,7 +84,7 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
             case 2:
                 for (int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j][i] != guess[i]) {
-                        validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
+                        validOptions.erase(validOptions.begin() + j);
                         j--;
                     }
                 }
@@ -91,11 +93,6 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
                 throw std::invalid_argument("Feedback contained non-0-1-or-2 number.");
         }
     }
-
-    availableOptions.erase(guessInOptions);
-    validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
-
-    
 
     updateFrequencies();
     sortBy(availableOptions);
