@@ -1,8 +1,10 @@
 #include <string>
 #include <vector>
-#include <map>
 #include <fstream>
 #include <algorithm>
+#include <exception>
+#include <iostream>
+#include <string>
 #include "WordleSolver.h"
 
 WordleSolver::WordleSolver() {}
@@ -16,16 +18,39 @@ void WordleSolver::init(std::string filename) {
     std::string nextWord;
     while (getline(stream, nextWord)) {
         if (nextWord.size() == numLetters) {
+            std::transform(nextWord.begin(), nextWord.end(), nextWord.begin(),
+                [](unsigned char c){ return std::tolower(c); }); // map to lower on each letter
+                                                                 // to make string lowercase
             availableOptions.push_back(nextWord);
             validOptions.push_back(nextWord);
         } else {
             throw std::invalid_argument("File contained non-5-letter words.");
         }
     }
+
+    for (int i = 0; i < numLetters; i++) {
+        std::map<char, int> freqs;
+        std::map<char, int> freqs2;
+        for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
+            freqs.insert(std::pair<char, int>(letter, 0));
+            freqs2.insert(std::pair<char, int>(letter, 0));
+        }
+        letterFrequencies.push_back(freqs);
+        wordsWithLetterHereOrWithout.push_back(freqs2);
+    }
+
+    for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
+        wordsWithLetter.insert(std::pair<char, int>(letter, 0));
+        wordsWithoutLetter.insert(std::pair<char, int>(letter, 0));
+    }
+
+    updateFrequencies();
+    sortBy(availableOptions);
+    sortBy(validOptions);
 }
 
 // invariant:
-void WordleSolver::takeGuess(std::string guess, std::vector<int> feedback) {
+void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback) {
     auto guessInOptions = std::find(availableOptions.begin(), availableOptions.end(), guess);
     if (guessInOptions == availableOptions.end()) {
         throw std::invalid_argument("Invalid guess.");
@@ -33,16 +58,48 @@ void WordleSolver::takeGuess(std::string guess, std::vector<int> feedback) {
     if (feedback.size() != numLetters) {
         throw std::invalid_argument("Feedback did not contain exactly 5 numbers.");
     }
-    for (int i : feedback) {
-        if (i < 0 || i > 2)
-            throw std::invalid_argument("Feedback contained invalid number.");
+    for (int i = 0; i < numLetters; i++) {
+        switch (feedback[i]) {
+            case 0:
+                for (int j = 0; j < validOptions.size(); j++) {
+                    if (validOptions[j].find(guess[i]) != std::string::npos && validOptions[j].find_first_of(guess[i]) == validOptions[j].find_last_of(guess[i])) {
+                        validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
+                        j--;
+                    }
+                    std:: cout << j << std::endl;
+                }
+                break;
+            case 1: 
+                for (int j = 0; j < validOptions.size(); j++) {
+                    if (validOptions[j][i] == guess[i]
+                        || std::find(validOptions[j].begin(),
+                         validOptions[j].end(), guess[i]) == validOptions[j].end()) {
+                        validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
+                        j--;
+                    }
+                }
+                break;
+            case 2:
+                for (int j = 0; j < validOptions.size(); j++) {
+                    if (validOptions[j][i] != guess[i]) {
+                        validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
+                        j--;
+                    }
+                }
+                break;
+            default:
+                throw std::invalid_argument("Feedback contained non-0-1-or-2 number.");
+        }
     }
 
-    validOptions.erase(guessInOptions);
+    availableOptions.erase(guessInOptions);
     validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
 
-    // update valid options, removing now invalid options
-    // resort available options
+    
+
+    updateFrequencies();
+    sortBy(availableOptions);
+    sortBy(validOptions);
 }
 
 int WordleSolver::numOptions() {
@@ -50,52 +107,94 @@ int WordleSolver::numOptions() {
 }
 
 // invariant: assumes list of valid 
-std::map<std::string, bool> WordleSolver::getAllOptions(int n) {
+std::vector<std::pair<std::string, bool>> WordleSolver::getAllOptions(int n) {
     if (n > availableOptions.size()) {
         throw std::invalid_argument("n > number of options remaining");
     }
-    std::map<std::string, bool> options;
+    std::vector<std::pair<std::string, bool>> options;
     for (int i = 0; i < n; i++) {
-        options.insert(std::pair<std::string, bool>(availableOptions[i],
+        options.push_back(std::pair<std::string, bool>(availableOptions[i],
             std::find(validOptions.begin(), validOptions.end(), availableOptions[i]) != validOptions.end()));
     }
     return options;
 }
 
-std::map<std::string, bool> WordleSolver::getValidOptions(int n) {
+std::vector<std::pair<std::string, bool>> WordleSolver::getValidOptions(int n) {
     if (n > validOptions.size()) {
         throw std::invalid_argument("n > number of valid options remaining");
     }
-    std::map<std::string, bool> options;
+    std::vector<std::pair<std::string, bool>> options;
     for (int i = 0; i < n; i++) {
-        options.insert(std::pair<std::string, bool>(validOptions[i], true));
+        options.push_back(std::pair<std::string, bool>(validOptions[i], true));
     }
     return options;
 }
 
+void WordleSolver::updateFrequencies() {
+    for (int i = 0; i < numLetters; i++) {
+        for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
+            letterFrequencies[i][letter] = 0;
+            wordsWithLetterHereOrWithout[i][letter] = 0;
+        }
+    }
+
+    for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
+        wordsWithLetter[letter] = 0;
+        wordsWithoutLetter[letter] = 0;
+    }
+
+    for (int i = 0; i < numLetters; i++) {
+        for (std::string word : validOptions) {
+            letterFrequencies[i][word[i]]++;
+        }
+    }
+
+    for (std::string word : validOptions) {
+        for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
+            if (std::find(word.begin(), word.end(), letter) != word.end())
+                wordsWithLetter[letter]++;
+            else
+                wordsWithoutLetter[letter]++;
+
+            for (int i = 0; i < numLetters; i++) {
+                if (std::find(word.begin(), word.end(), letter) == word.end() || word[i] == letter)
+                    wordsWithLetterHereOrWithout[i][letter]++;
+            }
+        }
+    }
+}
+
 // note: assumes the given word exists within the list of available words
-double WordleSolver::calcEffect(std::string word) {
+double WordleSolver::calcEffect(const std::string word) {
     double sum = 0;
     for (int i = 0; i < numLetters; i++) {
-        int numExactOccurences = 0;
-        int numAnyOccurences = 0;
-        int numNoOccurences = 0;
-        for (auto it = availableOptions.begin(); it != availableOptions.end(); it++) {
-            if ((*it)[i] == word[i])
-                ++numExactOccurences;
-            if ((*it).find(word[i]) >= 0)
-                ++numAnyOccurences;
-            else 
-                ++numNoOccurences;
+        int numExactOccurences = letterFrequencies[i][word[i]];
+        int numAnyOccurences = wordsWithLetter[word[i]];
+        int numNoOccurences = wordsWithoutLetter[word[i]];
+
+        if (word.find(word[i]) == i) {
+            sum += ((double) numExactOccurences / validOptions.size()) * (validOptions.size() - numExactOccurences);
+            sum += ((double) numAnyOccurences / validOptions.size()) * wordsWithLetterHereOrWithout[i][word[i]];
+            sum += ((double) numNoOccurences / validOptions.size()) * numAnyOccurences;
         }
-        sum += (numExactOccurences / availableOptions.size()) * 3;
-        sum += (numAnyOccurences / availableOptions.size());
-        sum += (numNoOccurences / availableOptions.size()) * 2;
     }
     return sum;
 }
 
-std::vector<std::string> sortBy(std::vector<std::string> list, double (*func)(std::string)) {
+void WordleSolver::sortBy(std::vector<std::string> &list) {
+    // making use of Schwartzian transform (decorate-sort-undecorate) to efficiently sort list
+    std::vector<std::pair<std::string, double>> decoratedList;
+    for (auto it = list.begin(); it != list.end(); it++) {
+        decoratedList.push_back(std::pair<std::string, double>(*it, calcEffect(*it)));
+    }
+
+    std::sort(decoratedList.begin(), decoratedList.end(),
+        [](auto &pair1, auto &pair2) { return pair1.second > pair2.second; });
+        // lambda to sort in descending order of values
     
+    list.clear();
+    for (auto it = decoratedList.begin(); it != decoratedList.end(); it++) {
+        list.push_back(it->first);
+    }
 }
     

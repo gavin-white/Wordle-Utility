@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <exception>
 #include <sstream>
 #include "WordleSolver.h"
@@ -11,6 +11,8 @@
  * interface, passing input as appropriate to the Wordle Solver
  * and prompting the user.
  */
+
+/* NOTE: CONTROLLER IS STILL IN TEST-MODE. IT HASN'T BEEN CORRECTLY WRITTEN YET */
 void wordleUtilController(std::string filename) {
     WordleSolver solver;
     try {
@@ -35,10 +37,12 @@ void wordleUtilController(std::string filename) {
             continue;
         }
 
-        std::map<std::string, bool> options = solver.getAllOptions(n);
+        std::vector<std::pair<std::string, bool>> options = solver.getAllOptions(n);
         for (auto it = options.begin(); it != options.end(); it++) {
             std::cout << it->first << (it->second ? " (valid)" : " (invalid") << std::endl;
         }
+
+        solver.takeGuess("tares", std::vector<int>({0, 0, 0, 0, 0}));
 
     } while (true);
 }

@@ -13,14 +13,23 @@ vary between implementations */
 /* Module that encapsulates the functionality to solve a Wordle game */
 class WordleSolver {
     private:
-    int numLetters = 5;
+    const int numLetters = 5;
     std::vector<std::string> availableOptions; // all words that have yet to be guessed
     std::vector<std::string> validOptions; // words that could be the answer based on feedback
-    double calcEffect(std::string word); // calculate the effectiveness of a potential guess
+    std::vector<std::map<char, int>> letterFrequencies; // frequencies of letters at each position
+    std::map<char, int> wordsWithLetter; // how many words contain each letter
+    std::map<char, int> wordsWithoutLetter; // how many words do not contain each letter
+    std::vector<std::map<char, int>> wordsWithLetterHereOrWithout; // how many words contain each
+                                                                   // letter here or not at all
 
-    // sort a given list of strings in descending order based on the numeric result
-    // of a given function
-    std::vector<std::string> sortBy(std::vector<std::string> list, double (*func)(std::string));
+    // calculate the effectiveness of a potential guess
+    double calcEffect(const std::string word);
+
+    // sort a given list of strings in descending order based on their calculated effect
+    void sortBy(std::vector<std::string> &list);
+
+    // update the frequencies of the letters at each position
+    void updateFrequencies();
     
     public:
 
@@ -35,7 +44,7 @@ class WordleSolver {
      * Throws an error if the file cannot be opened or if it 
      * does not contain only 1+ 5 letter words on seperate lines.
      */
-    void init(std::string filename);
+    void init(const std::string filename);
 
     /*
      * Takes a guess for Wordle and the associated feedback
@@ -45,7 +54,7 @@ class WordleSolver {
      * If the feedback or the word is invalid, an error is thrown.
      * If no words remain after the guess, an error is thrown.
      */
-    void takeGuess(std::string guess, std::vector<int> feedback);
+    void takeGuess(std::string guess, const std::vector<int> feedback);
 
     /*
      * Produces the number of options for words remaining.
@@ -58,7 +67,7 @@ class WordleSolver {
      * whether or not the guess is potential correct answer or not.
      * Throws an error if n exceeds the total number of possible options.
      */
-    std::map<std::string, bool> getAllOptions(int n);
+    std::vector<std::pair<std::string, bool>> getAllOptions(int n);
 
     /*
      * Produces a mapping of the first _n_ potentially correct guesses remaining,
@@ -66,7 +75,7 @@ class WordleSolver {
      * whether or not the guess is potential correct answer or not (all true in this case).
      * Throws an error if n exceeds the number of valid remaining words.
      */
-    std::map<std::string, bool> getValidOptions(int n);
+    std::vector<std::pair<std::string, bool>> getValidOptions(int n);
     
 
 };
