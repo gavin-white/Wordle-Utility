@@ -17,6 +17,7 @@ class WordleSolver {
     std::vector<std::string> availableOptions; // all words that have yet to be guessed
     std::vector<std::string> validOptions; // words that could be the answer based on feedback
     std::vector<std::map<char, int>> letterFrequencies; // frequencies of letters at each position
+    std::vector<bool> alreadyFound; // whether each letter has been found
     std::map<char, int> wordsWithLetter; // how many words contain each letter
     std::map<char, int> wordsWithoutLetter; // how many words do not contain each letter
     std::vector<std::map<char, int>> wordsWithLetterHereOrWithout; // how many words contain each

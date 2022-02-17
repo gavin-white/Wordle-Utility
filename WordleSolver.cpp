@@ -44,6 +44,7 @@ void WordleSolver::init(std::string filename) {
         wordsWithoutLetter.insert(std::pair<char, int>(letter, 0));
     }
 
+    alreadyFound = std::vector<bool>({false, false, false, false, false});
     updateFrequencies();
     sortBy(availableOptions);
     sortBy(validOptions);
@@ -82,6 +83,7 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
                 }
                 break;
             case 2:
+                alreadyFound[i] = true;
                 for (int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j][i] != guess[i]) {
                         validOptions.erase(validOptions.begin() + j);
@@ -141,6 +143,8 @@ void WordleSolver::updateFrequencies() {
     }
 
     for (int i = 0; i < numLetters; i++) {
+        if (alreadyFound[i]) continue;
+
         for (std::string word : validOptions) {
             letterFrequencies[i][word[i]]++;
         }
@@ -148,13 +152,13 @@ void WordleSolver::updateFrequencies() {
 
     for (std::string word : validOptions) {
         for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
-            if (std::find(word.begin(), word.end(), letter) != word.end())
+            if (word.find(letter) != std::string::npos && !alreadyFound[word.find(letter)])
                 wordsWithLetter[letter]++;
             else
                 wordsWithoutLetter[letter]++;
 
             for (int i = 0; i < numLetters; i++) {
-                if (std::find(word.begin(), word.end(), letter) == word.end() || word[i] == letter)
+                if (word.find(letter) == std::string::npos || word[i] == letter)
                     wordsWithLetterHereOrWithout[i][letter]++;
             }
         }
@@ -168,7 +172,7 @@ double WordleSolver::calcEffect(const std::string word) {
         int numExactOccurences = letterFrequencies[i][word[i]];
         int numAnyOccurences = wordsWithLetter[word[i]];
         int numNoOccurences = wordsWithoutLetter[word[i]];
-
+        
         if (word.find(word[i]) == i) {
             sum += ((double) numExactOccurences / validOptions.size()) * (validOptions.size() - numExactOccurences);
             sum += ((double) numAnyOccurences / validOptions.size()) * wordsWithLetterHereOrWithout[i][word[i]];
