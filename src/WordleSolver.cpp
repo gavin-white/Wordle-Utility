@@ -61,7 +61,9 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
     }
 
     availableOptions.erase(guessInOptions);
-    validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
+    if (std::find(validOptions.begin(), validOptions.end(), guess) != validOptions.end()) {
+        validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
+    }
 
     for (int i = 0; i < numLetters; i++) {
         switch (feedback[i]) {

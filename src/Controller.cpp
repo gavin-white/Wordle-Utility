@@ -48,7 +48,7 @@ void wordleUtilController(std::string filename) {
             continue;
         }
         for (auto it = options.begin(); it != options.end(); it++) {
-            std::cout << it->first << (it->second ? " (valid)" : " (invalid") << std::endl;
+            std::cout << it->first << (it->second ? " (valid)" : " (invalid)") << std::endl;
         }
         
         std::string guess;

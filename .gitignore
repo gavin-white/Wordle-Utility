@@ -1,0 +1,41 @@
+# Ignore object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Ignore compiled and linked libraries
+*.lib
+*.a
+*.so
+*.so.*
+*.dylib
+
+# Ignore executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Ignore core dumps
+core
+
+# Ignore temp files
+*~
+
+# Ignore IDE/project files
+*.sublime*
+*.idea/
+*.vscode/
+*.project
+*.cproject
+*.settings/
+
+# Ignore build folders
+build/
+bin/
+obj/
+Debug/
+Release/
