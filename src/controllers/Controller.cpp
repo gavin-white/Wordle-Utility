@@ -5,6 +5,7 @@
 #include <exception>
 #include <sstream>
 #include "models/WordleSolver.hpp"
+#include "utilities/FileReader.hpp"
 
 /*
  * Controller for the Wordle Utility. Handles the command-line
@@ -14,13 +15,14 @@
 
 /* NOTE: CONTROLLER IS STILL IN TEST-MODE. IT HASN'T BEEN CORRECTLY WRITTEN YET */
 void wordleUtilController(std::string filename) {
-    WordleSolver solver;
+    std::vector<std::string> wordList;
     try {
-        solver.init(filename);
+        wordList = FileReader::readWords(filename, '\n', 5);
     } catch (std::exception& e) {
         std::cout << "Issue loading wordlist file: " << e.what() << std::endl;
         return;
     }
+    WordleSolver solver = WordleSolver(wordList);
 
     do {
         std::cout << "There are: " << solver.numOptions() << " remaining.\n";

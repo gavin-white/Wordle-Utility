@@ -12,7 +12,7 @@ vary between implementations */
 /* Module that encapsulates the functionality to solve a Wordle game */
 class WordleSolver {
     private:
-    unsigned int numLetters = 5;
+    unsigned int numLetters;
     std::vector<std::string> availableOptions; // all words that have yet to be guessed
     std::vector<std::string> validOptions; // words that could be the answer based on feedback
     std::vector<std::map<char, int>> letterFrequencies; // frequencies of letters at each position
@@ -33,18 +33,14 @@ class WordleSolver {
     
     public:
 
-    /* 
-     * Constructs a WordleSolver object.
-     */ 
-    WordleSolver();
-
-    /*
-     * Initializes the Wordle solver, loading in the wordlist
-     * from _filename_. 
-     * Throws an error if the file cannot be opened or if it 
-     * does not contain only 1+ 5 letter words on seperate lines.
+    /**
+     * @brief Construct a new Wordle Solver object.
+     * 
+     * @throws std::invalid_argument if any of the words in allowedWords are not of equal length
+     * @throws std::invalid_argument if the list of allowed words is empty
+     * @param allowedWords words for this wordle game (must be of equal length)
      */
-    void init(const std::string filename);
+    WordleSolver(std::vector<std::string> allowedWords);
 
     /*
      * Takes a guess for Wordle and the associated feedback

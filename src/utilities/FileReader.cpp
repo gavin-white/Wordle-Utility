@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <limits>
 #include "utilities/FileReader.hpp"
 
 std::vector<std::string> FileReader::readWords(std::string filename, char delim, unsigned int requiredLength) {
@@ -9,7 +10,7 @@ std::vector<std::string> FileReader::readWords(std::string filename, char delim,
 }
 
 std::vector<std::string> FileReader::readWords(std::string filename, char delim) {
-    return FileReader::readWords(filename, delim, 0, 1000);
+    return FileReader::readWords(filename, delim, 0, std::numeric_limits<unsigned int>::max());
 }
 
 std::vector<std::string> FileReader::readWords(std::string filename, char delim, unsigned int minLength, unsigned int maxLength) {
@@ -24,7 +25,7 @@ std::vector<std::string> FileReader::readWords(std::string filename, char delim,
         if (nextWord.size() >= minLength && nextWord.size() <= maxLength) {
             std::transform(nextWord.begin(), nextWord.end(), nextWord.begin(),
                 [](unsigned char c){ return std::tolower(c); }); // map to lower on each letter
-                                                                    // to make string lowercase
+                                                                 // to make string lowercase
             words.push_back(nextWord);
         } else {
             throw std::invalid_argument("File contains words outside of the specified length range.");

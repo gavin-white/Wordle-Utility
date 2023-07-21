@@ -7,24 +7,13 @@
 #include <string>
 #include "models/WordleSolver.hpp"
 
-WordleSolver::WordleSolver() {}
-
-void WordleSolver::init(std::string filename) {
-    std::ifstream stream = std::ifstream(filename);
-    if (!stream.good()) {
-        throw std::invalid_argument("File could not be opened.");
-    }
-
-    std::string nextWord;
-    while (getline(stream, nextWord)) {
-        if (nextWord.size() == numLetters) {
-            std::transform(nextWord.begin(), nextWord.end(), nextWord.begin(),
-                [](unsigned char c){ return std::tolower(c); }); // map to lower on each letter
-                                                                 // to make string lowercase
-            availableOptions.push_back(nextWord);
-            validOptions.push_back(nextWord);
-        } else {
-            throw std::invalid_argument("File contained non-5-letter words.");
+WordleSolver::WordleSolver(std::vector<std::string> allowedWords) {
+    if (allowedWords.size() == 0) 
+        throw std::invalid_argument("Provided word list is empty.");
+    numLetters = allowedWords[0].size();
+    for (std::string word : allowedWords) {
+        if (word.size() != numLetters) {
+            throw std::invalid_argument("Provided word list contains words of different lengths.");
         }
     }
 
@@ -44,7 +33,7 @@ void WordleSolver::init(std::string filename) {
         wordsWithoutLetter.insert(std::pair<char, int>(letter, 0));
     }
 
-    alreadyFound = std::vector<bool>({false, false, false, false, false});
+    alreadyFound.assign(numLetters, false);
     updateFrequencies();
     sortBy(availableOptions);
     sortBy(validOptions);
@@ -187,8 +176,8 @@ double WordleSolver::calcEffect(const std::string word) {
 void WordleSolver::sortBy(std::vector<std::string> &list) {
     // making use of Schwartzian transform (decorate-sort-undecorate) to efficiently sort list
     std::vector<std::pair<std::string, double>> decoratedList;
-    for (auto it = list.begin(); it != list.end(); it++) {
-        decoratedList.push_back(std::pair<std::string, double>(*it, calcEffect(*it)));
+    for (std::string word : list) {
+        decoratedList.push_back(std::pair<std::string, double>(word, calcEffect(word)));
     }
 
     std::sort(decoratedList.begin(), decoratedList.end(),
@@ -196,8 +185,8 @@ void WordleSolver::sortBy(std::vector<std::string> &list) {
         // lambda to sort in descending order of values
     
     list.clear();
-    for (auto it = decoratedList.begin(); it != decoratedList.end(); it++) {
-        list.push_back(it->first);
+    for (auto elem : decoratedList) {
+        list.push_back(elem.first);
     }
 }
     
