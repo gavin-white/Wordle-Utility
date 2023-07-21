@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <exception>
 #include <sstream>
-#include "WordleSolver.h"
+#include "models/WordleSolver.hpp"
 
 /*
  * Controller for the Wordle Utility. Handles the command-line

@@ -8,6 +8,10 @@
 
 This is a utility program that can be used by a human to help play the popular online word-guessing game [Wordle](https://www.nytimes.com/games/wordle/index.html). It can be run on the command-line and provides an interface for the user to input what guess they chose and the feedback the game gave and uses the information to calculate what they should use as their next guess. 
 
+## Usage Instructions
+
+On Unix-based systems, the provided Makefile can be used to compile the program from the project directory with `Make`. The program can then be run by performing `./wordle-utility <filename>` where `<filename>` is the path to a file containing a newline separated list of valid words (each of length 5). There exists one such file at `/word_lists/new_words.txt`. 
+
 ## What's Wordle?
 
 [Wordle](https://www.nytimes.com/games/wordle/index.html) is an online word-guessing game in which the player is trying to guess a secret 5-letter word. Each guess the player makes must be a valid 5-letter word. After each guess they make, the game provides feedback on how good their guess was by coloring each letter according to these rules:

@@ -1,5 +1,4 @@
-#ifndef WORDLE_SOLVER_H
-#define WORDLE_SOLVER_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -80,5 +79,3 @@ class WordleSolver {
     
 
 };
-
-#endif

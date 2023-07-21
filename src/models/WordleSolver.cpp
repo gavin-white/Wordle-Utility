@@ -5,7 +5,7 @@
 #include <exception>
 #include <iostream>
 #include <string>
-#include "WordleSolver.h"
+#include "models/WordleSolver.hpp"
 
 WordleSolver::WordleSolver() {}
 
