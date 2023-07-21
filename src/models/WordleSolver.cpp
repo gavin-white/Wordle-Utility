@@ -28,7 +28,7 @@ void WordleSolver::init(std::string filename) {
         }
     }
 
-    for (int i = 0; i < numLetters; i++) {
+    for (unsigned int i = 0; i < numLetters; i++) {
         std::map<char, int> freqs;
         std::map<char, int> freqs2;
         for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
@@ -65,10 +65,10 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
         validOptions.erase(std::find(validOptions.begin(), validOptions.end(), guess));
     }
 
-    for (int i = 0; i < numLetters; i++) {
+    for (unsigned int i = 0; i < numLetters; i++) {
         switch (feedback[i]) {
             case 0:
-                for (int j = 0; j < validOptions.size(); j++) {
+                for (unsigned int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j].find(guess[i]) != std::string::npos && validOptions[j].find_first_of(guess[i]) == validOptions[j].find_last_of(guess[i])) {
                         validOptions.erase(validOptions.begin() + j);
                         j--;
@@ -76,7 +76,7 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
                 }
                 break;
             case 1: 
-                for (int j = 0; j < validOptions.size(); j++) {
+                for (unsigned int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j][i] == guess[i]
                         || validOptions[j].find(guess[i]) == std::string::npos) {
                         validOptions.erase(validOptions.begin() + j);
@@ -86,7 +86,7 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
                 break;
             case 2:
                 alreadyFound[i] = true;
-                for (int j = 0; j < validOptions.size(); j++) {
+                for (unsigned int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j][i] != guess[i]) {
                         validOptions.erase(validOptions.begin() + j);
                         j--;
@@ -108,31 +108,31 @@ int WordleSolver::numOptions() {
 }
 
 // invariant: assumes list of valid 
-std::vector<std::pair<std::string, bool>> WordleSolver::getAllOptions(int n) {
+std::vector<std::pair<std::string, bool>> WordleSolver::getAllOptions(unsigned int n) {
     if (n > availableOptions.size()) {
         throw std::invalid_argument("n > number of options remaining");
     }
     std::vector<std::pair<std::string, bool>> options;
-    for (int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; i++) {
         options.push_back(std::pair<std::string, bool>(availableOptions[i],
             std::find(validOptions.begin(), validOptions.end(), availableOptions[i]) != validOptions.end()));
     }
     return options;
 }
 
-std::vector<std::pair<std::string, bool>> WordleSolver::getValidOptions(int n) {
+std::vector<std::pair<std::string, bool>> WordleSolver::getValidOptions(unsigned int n) {
     if (n > validOptions.size()) {
         throw std::invalid_argument("n > number of valid options remaining");
     }
     std::vector<std::pair<std::string, bool>> options;
-    for (int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; i++) {
         options.push_back(std::pair<std::string, bool>(validOptions[i], true));
     }
     return options;
 }
 
 void WordleSolver::updateFrequencies() {
-    for (int i = 0; i < numLetters; i++) {
+    for (unsigned int i = 0; i < numLetters; i++) {
         for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
             letterFrequencies[i][letter] = 0;
             wordsWithLetterHereOrWithout[i][letter] = 0;
@@ -144,7 +144,7 @@ void WordleSolver::updateFrequencies() {
         wordsWithoutLetter[letter] = 0;
     }
 
-    for (int i = 0; i < numLetters; i++) {
+    for (unsigned int i = 0; i < numLetters; i++) {
         if (alreadyFound[i]) continue;
 
         for (std::string word : validOptions) {
@@ -159,7 +159,7 @@ void WordleSolver::updateFrequencies() {
             else
                 wordsWithoutLetter[letter]++;
 
-            for (int i = 0; i < numLetters; i++) {
+            for (unsigned int i = 0; i < numLetters; i++) {
                 if (word.find(letter) == std::string::npos || word[i] == letter)
                     wordsWithLetterHereOrWithout[i][letter]++;
             }
@@ -170,7 +170,7 @@ void WordleSolver::updateFrequencies() {
 // note: assumes the given word exists within the list of available words
 double WordleSolver::calcEffect(const std::string word) {
     double sum = 0;
-    for (int i = 0; i < numLetters; i++) {
+    for (unsigned int i = 0; i < numLetters; i++) {
         int numExactOccurences = letterFrequencies[i][word[i]];
         int numAnyOccurences = wordsWithLetter[word[i]];
         int numNoOccurences = wordsWithoutLetter[word[i]];

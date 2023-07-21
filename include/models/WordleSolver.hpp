@@ -12,7 +12,7 @@ vary between implementations */
 /* Module that encapsulates the functionality to solve a Wordle game */
 class WordleSolver {
     private:
-    const int numLetters = 5;
+    unsigned int numLetters = 5;
     std::vector<std::string> availableOptions; // all words that have yet to be guessed
     std::vector<std::string> validOptions; // words that could be the answer based on feedback
     std::vector<std::map<char, int>> letterFrequencies; // frequencies of letters at each position
@@ -67,7 +67,7 @@ class WordleSolver {
      * whether or not the guess is potential correct answer or not.
      * Throws an error if n exceeds the total number of possible options.
      */
-    std::vector<std::pair<std::string, bool>> getAllOptions(int n);
+    std::vector<std::pair<std::string, bool>> getAllOptions(unsigned int n);
 
     /*
      * Produces a mapping of the first _n_ potentially correct guesses remaining,
@@ -75,7 +75,7 @@ class WordleSolver {
      * whether or not the guess is potential correct answer or not (all true in this case).
      * Throws an error if n exceeds the number of valid remaining words.
      */
-    std::vector<std::pair<std::string, bool>> getValidOptions(int n);
+    std::vector<std::pair<std::string, bool>> getValidOptions(unsigned int n);
     
 
 };
