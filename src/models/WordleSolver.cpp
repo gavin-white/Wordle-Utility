@@ -11,15 +11,15 @@ WordleSolver::WordleSolver(std::vector<std::string> allowedWords) {
     if (allowedWords.size() == 0) 
         throw std::invalid_argument("Provided word list is empty.");
     numLetters = allowedWords[0].size();
-    for (std::string word : allowedWords) {
+    for (std::string& word : allowedWords) {
         if (word.size() != numLetters) {
             throw std::invalid_argument("Provided word list contains words of different lengths.");
         }
     }
 
     for (unsigned int i = 0; i < numLetters; i++) {
-        std::map<char, int> freqs;
-        std::map<char, int> freqs2;
+        std::unordered_map<char, int> freqs;
+        std::unordered_map<char, int> freqs2;
         for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
             freqs.insert(std::pair<char, int>(letter, 0));
             freqs2.insert(std::pair<char, int>(letter, 0));
@@ -136,12 +136,12 @@ void WordleSolver::updateFrequencies() {
     for (unsigned int i = 0; i < numLetters; i++) {
         if (alreadyFound[i]) continue;
 
-        for (std::string word : validOptions) {
+        for (std::string& word : validOptions) {
             letterFrequencies[i][word[i]]++;
         }
     }
 
-    for (std::string word : validOptions) {
+    for (std::string& word : validOptions) {
         for (unsigned char letter = 'a'; letter <= 'z'; letter++) {
             if (word.find(letter) != std::string::npos && !alreadyFound[word.find(letter)])
                 wordsWithLetter[letter]++;
@@ -176,16 +176,16 @@ double WordleSolver::calcEffect(const std::string word) {
 void WordleSolver::sortBy(std::vector<std::string> &list) {
     // making use of Schwartzian transform (decorate-sort-undecorate) to efficiently sort list
     std::vector<std::pair<std::string, double>> decoratedList;
-    for (std::string word : list) {
+    for (std::string& word : list) {
         decoratedList.push_back(std::pair<std::string, double>(word, calcEffect(word)));
     }
 
     std::sort(decoratedList.begin(), decoratedList.end(),
-        [](auto &pair1, auto &pair2) { return pair1.second > pair2.second; });
+        [](auto& pair1, auto& pair2) { return pair1.second > pair2.second; });
         // lambda to sort in descending order of values
     
     list.clear();
-    for (auto elem : decoratedList) {
+    for (auto& elem : decoratedList) {
         list.push_back(elem.first);
     }
 }

@@ -7,7 +7,7 @@
 #include <string>
 #include "models/EditDistanceWordle.hpp"
 
-int EditDistanceWordle::editDistance(std::string str1, std::string str2) {
+int EditDistanceWordle::editDistance(std::string& str1, std::string& str2) {
     char** array = new char*[str1.size() + 1];
     for(unsigned int i = 0; i < str1.size() + 1; i++)
         array[i] = new char[str2.size() + 1];

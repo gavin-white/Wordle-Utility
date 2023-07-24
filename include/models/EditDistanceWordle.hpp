@@ -22,7 +22,7 @@ class EditDistanceWordle {
      * @param str2 second string
      * @return int edit distance
      */
-    static int editDistance(std::string str1, std::string str2);
+    static int editDistance(std::string& str1, std::string& str2);
     
     /**
      * @brief You can construct an EditDistanceWordle object with a list of allowed words and a word provider.
@@ -30,7 +30,7 @@ class EditDistanceWordle {
      * @param allowedWords 
      * @param wordProvider 
      */
-    EditDistanceWordle(const std::vector<std::string> allowedWords, const IWordProvider &wordProvider);
+    EditDistanceWordle(const std::vector<std::string> allowedWords, const IWordProvider& wordProvider);
 
     /**
      * @brief Provides a guess for the game and returns the edit distance between the guess and the answer.

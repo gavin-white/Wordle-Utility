@@ -20,8 +20,8 @@ void EditDistanceWordleSolver::takeGuess(std::string guess, const int feedback) 
     
     std::vector<int> distances;
 
-    for (std::string word : availableOptions) {
-        for (std::string word2 : availableOptions) {
+    for (std::string& word : availableOptions) {
+        for (std::string& word2 : availableOptions) {
             distances.push_back(EditDistanceWordle::editDistance(word, word2));
             //std::cout << word << " " << word2 << "\n";
         }

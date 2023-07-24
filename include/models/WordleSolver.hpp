@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 /* Note that the words _best_ and _worst_ are used. The terms are 
 used to refer to how good the particular algorithm that the implementation
@@ -15,11 +15,11 @@ class WordleSolver {
     unsigned int numLetters;
     std::vector<std::string> availableOptions; // all words that have yet to be guessed
     std::vector<std::string> validOptions; // words that could be the answer based on feedback
-    std::vector<std::map<char, int>> letterFrequencies; // frequencies of letters at each position
+    std::vector<std::unordered_map<char, int>> letterFrequencies; // frequencies of letters at each position
     std::vector<bool> alreadyFound; // whether each letter has been found
-    std::map<char, int> wordsWithLetter; // how many words contain each letter
-    std::map<char, int> wordsWithoutLetter; // how many words do not contain each letter
-    std::vector<std::map<char, int>> wordsWithLetterHereOrWithout; // how many words contain each
+    std::unordered_map<char, int> wordsWithLetter; // how many words contain each letter
+    std::unordered_map<char, int> wordsWithoutLetter; // how many words do not contain each letter
+    std::vector<std::unordered_map<char, int>> wordsWithLetterHereOrWithout; // how many words contain each
                                                                    // letter here or not at all
 
     // calculate the effectiveness of a potential guess
