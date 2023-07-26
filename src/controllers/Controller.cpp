@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <exception>
 #include <sstream>
-#include "models/WordleSolver.hpp"
+#include "models/solvers/WordleSolver.hpp"
 #include "utilities/FileReader.hpp"
 
 /*

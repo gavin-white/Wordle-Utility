@@ -1,34 +1,66 @@
 #include <vector>
 #include <string>
-
 #include "structures/PrefixTree.hpp"
-#include "structures/PrefixTreeNode.hpp"
 
-
-PrefixTree::~PrefixTree() {
-    delete this->root;
+PrefixTreeNode::PrefixTreeNode(std::string wordEnd) {
+    this->wordEnd = wordEnd;
 }
 
-PrefixTree::PrefixTree(std::vector<std::string> words) {
-    this->root = PrefixTreeNode::buildTree(words);
+PrefixTreeNode::~PrefixTreeNode() {
+    for (auto& child : this->children) {
+        delete child.second;
+    }
 }
 
-bool PrefixTree::containsPrefix(std::string prefix) {
-    return this->root->containsWord(prefix);
+PrefixTreeNode* PrefixTreeNode::buildTree(std::vector<std::string> words) {
+    PrefixTreeNode* root = new PrefixTreeNode("");
+
+    for (std::string& word : words) {
+        PrefixTreeNode* parent = root;
+        for (char letter : word) {
+            if (parent->children.find(letter) == parent->children.end()) {
+                parent->children[letter] = new PrefixTreeNode("");
+            }
+            parent = parent->children[letter];
+        }
+        parent->wordEnd = word;
+    }
+
+    return root;
 }
 
-std::vector<std::string> PrefixTree::getWords() {
-    return this->root->getWordsWithPrefix("");
+PrefixTreeNode* PrefixTreeNode::getLastNode(std::string sequence) {
+    if (sequence.size() == 0)
+        return this;
+
+    if (this->children.find(sequence[0]) == this->children.end())
+        return nullptr;
+    else
+        return this->children[sequence[0]]->getLastNode(sequence.substr(1));
 }
 
-std::vector<std::string> PrefixTree::getWordsWithPrefix(std::string prefix) {
-    return this->root->getWordsWithPrefix(prefix);
+bool PrefixTreeNode::isPrefix(std::string prefix) {
+    return this->getLastNode(prefix);
 }
 
-bool PrefixTree::containsWord(std::string word) {
-    return this->root->containsWord(word);
+bool PrefixTreeNode::containsWord(std::string word) {
+    return this->getLastNode(word) && this->getLastNode(word)->wordEnd != "";
 }
 
-PrefixTree::LevenshteinTuple PrefixTree::levenshteinDistance(std::string word) {
-    return this->root->levenshteinDistance(word);
+void PrefixTreeNode::dfs(std::vector<std::string>& words) {
+    if (this->wordEnd != "") {
+        words.push_back(this->wordEnd);
+    }
+    for (auto &child : this->children) {
+        child.second->dfs(words);
+    }
+}
+
+std::vector<std::string> PrefixTreeNode::getWordsWithPrefix(std::string prefix) {
+    std::vector<std::string> words;
+    PrefixTreeNode* prefixEnd = getLastNode(prefix);
+    if (prefixEnd) {
+        prefixEnd->dfs(prefix, words);
+    }
+    return words;
 }

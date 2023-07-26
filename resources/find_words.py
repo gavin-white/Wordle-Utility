@@ -1,7 +1,6 @@
 import argparse
 import os
 
-
 def find_words(file_path, lengths):
     """Find words of a given length in a file. The approach is to find
     all whitespace-separated tokens and filter for ones composed of
