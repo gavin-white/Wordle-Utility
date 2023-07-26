@@ -8,6 +8,8 @@
  * Class that directly provides a specified word to be used as the answer in a Wordle game.
  */
 class RandomWordProvider : public IWordProvider {
+    private:
+    std::vector<std::string> wordsToChoseFrom;
 
     public:
     /**
@@ -15,7 +17,7 @@ class RandomWordProvider : public IWordProvider {
      * 
      * @param word the word this provider should provide
      */
-    RandomWordProvider();
+    RandomWordProvider(std::vector<std::string> wordsToChoseFrom);
 
     /**
      * @brief Provides a word to be used as the answer in a Wordle game.

@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include "IWordleSolver.hpp"
+#include "../games/WordleGame.hpp"
 
 /* Note that the words _best_ and _worst_ are used. The terms are 
 used to refer to how good the particular algorithm that the implementation
@@ -10,7 +12,7 @@ of the WordleSolver uses to judge guesses believes a guess is. This may
 vary between implementations */
 
 /* Module that encapsulates the functionality to solve a Wordle game */
-class WordleSolver {
+class WordleSolver : public IWordleSolver<std::vector<WordleFeedback>> {
     private:
     unsigned int numLetters;
     std::vector<std::string> availableOptions; // all words that have yet to be guessed
@@ -50,12 +52,12 @@ class WordleSolver {
      * If the feedback or the word is invalid, an error is thrown.
      * If no words remain after the guess, an error is thrown.
      */
-    void takeGuess(std::string guess, const std::vector<int> feedback);
+    void takeGuess(std::string guess, const std::vector<WordleFeedback> feedback) override;
 
     /*
      * Produces the number of options for words remaining.
      */
-    int numOptions();
+    int numOptions() const override;
 
     /*
      * Produces a mapping of the first _n_ recommended guesses from best
@@ -63,15 +65,16 @@ class WordleSolver {
      * whether or not the guess is potential correct answer or not.
      * Throws an error if n exceeds the total number of possible options.
      */
-    std::vector<std::pair<std::string, bool>> getAllOptions(unsigned int n);
+    std::vector<std::pair<std::string, bool>> recommendGuesses(unsigned int n) override;
 
-    /*
-     * Produces a mapping of the first _n_ potentially correct guesses remaining,
-     * in order of best to worst. The guesses are mapped onto a boolean which indicates
-     * whether or not the guess is potential correct answer or not (all true in this case).
-     * Throws an error if n exceeds the number of valid remaining words.
+    /**
+     * @brief Produces a mapping of the first _num_ guesses that match the given template.
+     * 
+     * @param temp the template
+     * @param num the number of guesses to produce
+     * @return std::vector<std::pair<std::string, bool>> the guesses mapped to whether or not 
+     * they are potential correct answers
      */
-    std::vector<std::pair<std::string, bool>> getValidOptions(unsigned int n);
-    
+    std::vector<std::pair<std::string, bool>> matchGuesses(std::string temp, unsigned int num) override;
 
 };

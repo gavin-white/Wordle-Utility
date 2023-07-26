@@ -6,50 +6,99 @@
 #include "models/games/EditDistanceWordleGame.hpp"
 #include "structures/LevenshteinTree.hpp"
 
-EditDistanceWordleSolver::EditDistanceWordleSolver() {
-
-}
-
 EditDistanceWordleSolver::EditDistanceWordleSolver(std::vector<std::string> allowedWords) {
     this->availableOptions = allowedWords;
+    this->validOptions = allowedWords;
+    LevenshteinTree* tree = LevenshteinTree::buildTree(allowedWords);
+    for (std::string word : allowedWords) {
+        this->levenshteinTuples[word] = tree->levenshteinDistance(word);
+    }
+    delete tree;
 }
 
-void EditDistanceWordleSolver::takeGuess(std::string guess, const int feedback) {
-    // Get the starting timepoint
-    auto start = std::chrono::high_resolution_clock::now();
-    
-    std::vector<int> distances;
+int EditDistanceWordleSolver::numOptions() const {
+    return validOptions.size();
+}
 
-    // for (std::string& word : availableOptions) {
-    //     for (std::string& word2 : availableOptions) {
-    //         distances.push_back(EditDistanceWordle::editDistance(word, word2));
-    //         //std::cout << word << " " << word2 << "\n";
-    //     }
-    // }
+void EditDistanceWordleSolver::takeGuess(std::string guess, int feedback) {
+    if (feedback == 0) {
+        validOptions.clear();
+        validOptions.push_back(guess);
+        return;
+    }
 
+    validOptions.erase(
+    std::remove_if(validOptions.begin(), validOptions.end(),
+                   [&](const std::string& option) {
+                       return levenshteinTuples[option].second[guess] != feedback;
+                   }),
+    validOptions.end());
 
-    LevenshteinTree* tree = LevenshteinTree::buildTree(availableOptions);
-    // std::unordered_map<std::string, LevenshteinTree::LevenshteinTuple> tuples;
-    // for (std::string& word : availableOptions) {
-    //     tuples[word] =  tree->levenshteinDistance(word);
-    // }
-
-    tree->levenshteinDistance(guess);
+    LevenshteinTree* tree = LevenshteinTree::buildTree(validOptions);
+    for (std::string word : availableOptions) {
+        this->levenshteinTuples[word] = tree->levenshteinDistance(word);
+    }
     delete tree;
 
-    // for (std::string& word2 : availableOptions) {
-    //     distances.push_back(EditDistanceWordleGame::editDistance(guess, word2));
-    // }
-    
-    // mean of distances values
-    //int mean = std::accumulate(distances.begin(), distances.end(), 0) / distances.size();
-    //std::cout << "Mean edit distance: " << mean << std::endl;
+    sortBy(validOptions);
+    sortBy(availableOptions);
+}
 
-    // Get the ending timepoint
-    auto end = std::chrono::high_resolution_clock::now();
+std::vector<std::pair<std::string, bool>> EditDistanceWordleSolver::recommendGuesses(unsigned int num) {
+    std::vector<std::pair<std::string, bool>> result;
+    for (unsigned int i = 0; result.size() < num; i++) {
+        if (std::find(validOptions.begin(), validOptions.end(), availableOptions[i]) != validOptions.end()) {
+            result.push_back(std::pair<std::string, bool>(availableOptions[i], 
+            std::find(validOptions.begin(), validOptions.end(), availableOptions[i]) != validOptions.end()));
+        }
+    }
+    return result;
+}
+
+std::vector<std::pair<std::string, bool>> EditDistanceWordleSolver::matchGuesses(std::string temp, unsigned int num) {
+    std::vector<std::pair<std::string, bool>> options;
+    for (std::string& option : availableOptions) {
+        bool flag = false;
+        if (temp.size() != option.size()) continue;
+        for (unsigned int i = 0; i < temp.size(); i++) {
+            if (temp[i] != '_' && temp[i] != option[i]) {
+                flag = true;
+                break;
+            }
+        }
+        if (!flag) {
+            options.push_back(std::pair<std::string, bool>(option,
+                std::find(validOptions.begin(), validOptions.end(), option) != validOptions.end()));
+        }
+        if (options.size() >= num) break;
+    }
+    return options;
+}
+
+double EditDistanceWordleSolver::calcEffect(const std::string word) {
+    LevenshteinTree::LevenshteinTuple tuple = levenshteinTuples[word];
+    double total = (double) validOptions.size();
+    double sum = 0;
+    for (auto& frequency : tuple.first) {
+        sum += frequency.second / total * (double) frequency.second;
+    }
+
+    return sum;
+}
+
+void EditDistanceWordleSolver::sortBy(std::vector<std::string> &list) {
+    // making use of Schwartzian transform (decorate-sort-undecorate) to efficiently sort list
+    std::vector<std::pair<std::string, double>> decoratedList;
+    for (std::string& word : list) {
+        decoratedList.push_back(std::pair<std::string, double>(word, calcEffect(word)));
+    }
+
+    std::sort(decoratedList.begin(), decoratedList.end(),
+        [](auto& pair1, auto& pair2) { return pair1.second > pair2.second; });
+        // lambda to sort in descending order of values
     
-    // Get duration. Subtracts two timepoints and returns a duration
-    std::chrono::duration<double> elapsed = end - start;
-    
-    std::cout << "Time taken by function: " << elapsed.count() << " seconds" << std::endl;
+    list.clear();
+    for (auto& elem : decoratedList) {
+        list.push_back(elem.first);
+    }
 }

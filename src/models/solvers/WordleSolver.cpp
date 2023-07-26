@@ -6,6 +6,8 @@
 #include <iostream>
 #include <string>
 #include "models/solvers/WordleSolver.hpp"
+#include "structures/PrefixTree.hpp"
+#include "structures/SuffixTree.hpp"
 
 WordleSolver::WordleSolver(std::vector<std::string> allowedWords) {
     if (allowedWords.size() == 0) 
@@ -17,6 +19,8 @@ WordleSolver::WordleSolver(std::vector<std::string> allowedWords) {
         }
     }
 
+    availableOptions = allowedWords;
+    validOptions = allowedWords;
     for (unsigned int i = 0; i < numLetters; i++) {
         std::unordered_map<char, int> freqs;
         std::unordered_map<char, int> freqs2;
@@ -40,13 +44,13 @@ WordleSolver::WordleSolver(std::vector<std::string> allowedWords) {
 }
 
 // invariant:
-void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback) {
+void WordleSolver::takeGuess(std::string guess, const std::vector<WordleFeedback> feedback) {
     auto guessInOptions = std::find(availableOptions.begin(), availableOptions.end(), guess);
     if (guessInOptions == availableOptions.end()) {
         throw std::invalid_argument("Invalid guess.");
     }
     if (feedback.size() != numLetters) {
-        throw std::invalid_argument("Feedback did not contain exactly 5 numbers.");
+        throw std::invalid_argument("Feedback did not correspond with exactly the right number of letters.");
     }
 
     availableOptions.erase(guessInOptions);
@@ -56,7 +60,7 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
 
     for (unsigned int i = 0; i < numLetters; i++) {
         switch (feedback[i]) {
-            case 0:
+            case WordleFeedback::BLACK:
                 for (unsigned int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j].find(guess[i]) != std::string::npos && validOptions[j].find_first_of(guess[i]) == validOptions[j].find_last_of(guess[i])) {
                         validOptions.erase(validOptions.begin() + j);
@@ -64,7 +68,7 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
                     }
                 }
                 break;
-            case 1: 
+            case WordleFeedback::YELLOW: 
                 for (unsigned int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j][i] == guess[i]
                         || validOptions[j].find(guess[i]) == std::string::npos) {
@@ -73,7 +77,7 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
                     }
                 }
                 break;
-            case 2:
+            case WordleFeedback::GREEN:
                 alreadyFound[i] = true;
                 for (unsigned int j = 0; j < validOptions.size(); j++) {
                     if (validOptions[j][i] != guess[i]) {
@@ -92,12 +96,11 @@ void WordleSolver::takeGuess(std::string guess, const std::vector<int> feedback)
     sortBy(validOptions);
 }
 
-int WordleSolver::numOptions() {
+int WordleSolver::numOptions() const {
     return validOptions.size();
 }
 
-// invariant: assumes list of valid 
-std::vector<std::pair<std::string, bool>> WordleSolver::getAllOptions(unsigned int n) {
+std::vector<std::pair<std::string, bool>> WordleSolver::recommendGuesses(unsigned int n) {
     if (n > availableOptions.size()) {
         throw std::invalid_argument("n > number of options remaining");
     }
@@ -109,13 +112,21 @@ std::vector<std::pair<std::string, bool>> WordleSolver::getAllOptions(unsigned i
     return options;
 }
 
-std::vector<std::pair<std::string, bool>> WordleSolver::getValidOptions(unsigned int n) {
-    if (n > validOptions.size()) {
-        throw std::invalid_argument("n > number of valid options remaining");
-    }
+std::vector<std::pair<std::string, bool>> WordleSolver::matchGuesses(std::string temp, unsigned int n) {
     std::vector<std::pair<std::string, bool>> options;
-    for (unsigned int i = 0; i < n; i++) {
-        options.push_back(std::pair<std::string, bool>(validOptions[i], true));
+    for (std::string option : availableOptions) {
+        bool flag = false;
+        for (unsigned int i = 0; i < numLetters; i++) {
+            if (temp[i] != '_' && temp[i] != option[i]) {
+                flag = true;
+                break;
+            }
+        }
+        if (!flag) {
+            options.push_back(std::pair<std::string, bool>(option,
+                std::find(validOptions.begin(), validOptions.end(), option) != validOptions.end()));
+        }
+        if (options.size() >= n) break;
     }
     return options;
 }

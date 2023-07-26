@@ -1,9 +1,13 @@
 #include <string>
 #include <vector>
+#include <ctime>
 #include "models/RandomWordProvider.hpp"
 
-RandomWordProvider::RandomWordProvider() {}
+RandomWordProvider::RandomWordProvider(std::vector<std::string> wordsToChooseFrom) {
+    this->wordsToChoseFrom = wordsToChooseFrom;
+}
 
 std::string RandomWordProvider::provideWord(std::vector<std::string> allowedWords) const {
-    return allowedWords[rand() % allowedWords.size()];
+    std::srand(std::time(0));
+    return wordsToChoseFrom[std::rand() % wordsToChoseFrom.size()];
 }

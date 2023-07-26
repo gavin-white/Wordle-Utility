@@ -20,6 +20,11 @@ enum WordleGameState {
 template <typename T>
 class IWordleGame {
     public:
+    virtual int guessesRemaining() const = 0;
+
+    virtual std::vector<std::string> getGuesses() const = 0;
+
+    virtual std::vector<T> getFeedback() const = 0;
     
     /**
      * @brief Makes a guess for the game and returns feedback.

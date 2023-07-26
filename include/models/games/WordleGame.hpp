@@ -19,7 +19,7 @@ enum WordleFeedback {
 };
 
 /**
- * @brief A class that encapsulates the functionality to provide a Wordle game that uses edit distance.
+ * @brief A class that encapsulates the functionality to provide a Wordle game.
  */
 class WordleGame : public AbstractWordleGame<std::vector<WordleFeedback>> {
     protected:

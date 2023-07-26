@@ -17,7 +17,8 @@ class AbstractWordleGame : public IWordleGame<T> {
     protected:
     std::string word; // the answer to this wordle game
     std::unordered_set<std::string> allowedWords; // all valid words for this game
-    std::unordered_set<std::string> usedWords; // words that have been guessed
+    std::vector<std::string> usedWords; // words that have been guessed
+    std::vector<T> feedback; // feedback for each guess
     int guessesLeft;
 
     /**
@@ -38,6 +39,12 @@ class AbstractWordleGame : public IWordleGame<T> {
      * @param maxGuesses the maximum number of guesses allowed
      */
     AbstractWordleGame(const std::vector<std::string> allowedWords, const IWordProvider& wordProvider, int maxGuesses);
+
+    virtual int guessesRemaining() const override;
+
+    virtual std::vector<std::string> getGuesses() const override;
+
+    virtual std::vector<T> getFeedback() const override;
 
     /**
      * @brief Provides a guess for the game and returns the edit distance between the guess and the answer.
