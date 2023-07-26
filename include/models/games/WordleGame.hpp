@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "IWordProvider.hpp"
+#include "models/IWordProvider.hpp"
 #include "IWordleGame.hpp"
 #include "AbstractWordleGame.hpp"
 

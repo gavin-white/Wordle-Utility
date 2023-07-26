@@ -5,8 +5,17 @@
 /**
  * @brief A Prefix Tree that can calculate the Levenshtein distance of a word to all words in the tree.
  */
-class LevenshteinTree : public PrefixTreeNode {
+class LevenshteinTree {
     private:
+    PrefixTree* delegate;
+
+    /**
+     * @brief Construct a new Levenshtein Tree.
+     * 
+     * @param delegate the PrefixTree that this LevenshteinTree should delegate to.
+     */
+    LevenshteinTree(PrefixTree* delegate);
+
     /**
      * @brief Performs a depth-first search on the tree, calculating the Levenshtein distance of each word in the tree.
      * 
@@ -17,9 +26,23 @@ class LevenshteinTree : public PrefixTreeNode {
      * @param frequencies the frequency of each Levenshtein distance to update
      * @param distances the Levenshtein distance of each word to update
      */
-    static void levenshteinDfs(PrefixTreeNode* node, const std::string& word, char letter, std::vector<int>& prevRow, std::unordered_map<int, int>& frequencies, std::unordered_map<std::string, int>& distances);
+    static void levenshteinDfs(PrefixTreeNode* node, const std::string& word, char letter, std::vector<int>& prevRow,
+     std::unordered_map<int, int>& frequencies, std::unordered_map<std::string, int>& distances);
 
     public:
+    /**
+     * @brief Destroy the LevenshteinTree Tree object.
+     */
+    ~LevenshteinTree();
+
+    /**
+     * @brief Constructs a PrefixTree from a list of words.
+     * 
+     * @param words the words to add to the tree
+     * @return PrefixTreeNode* a pointer to the tree
+     */
+    static LevenshteinTree* buildTree(std::vector<std::string> words);
+
     /**
      * @brief Represents the combination of a mapping of Levenshtein distances and their frequencies, and a mapping
      * of words and their Levenshtein distances. This is used in order to simultaneously calculate the Levenshtein

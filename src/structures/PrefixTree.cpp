@@ -60,7 +60,7 @@ std::vector<std::string> PrefixTreeNode::getWordsWithPrefix(std::string prefix) 
     std::vector<std::string> words;
     PrefixTreeNode* prefixEnd = getLastNode(prefix);
     if (prefixEnd) {
-        prefixEnd->dfs(prefix, words);
+        prefixEnd->dfs(words);
     }
     return words;
 }

@@ -5,7 +5,7 @@
 #include <exception>
 #include <iostream>
 #include <string>
-#include "models/WordleSolver.hpp"
+#include "models/solvers/WordleSolver.hpp"
 
 WordleSolver::WordleSolver(std::vector<std::string> allowedWords) {
     if (allowedWords.size() == 0) 

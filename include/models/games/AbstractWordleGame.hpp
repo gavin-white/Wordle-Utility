@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <unordered_set>
-#include "IWordProvider.hpp"
+#include "models/IWordProvider.hpp"
 #include "IWordleGame.hpp"
 
 /**
@@ -15,7 +15,7 @@
 template <typename T>
 class AbstractWordleGame : public IWordleGame<T> {
     protected:
-    const std::string word; // the answer to this wordle game
+    std::string word; // the answer to this wordle game
     std::unordered_set<std::string> allowedWords; // all valid words for this game
     std::unordered_set<std::string> usedWords; // words that have been guessed
     int guessesLeft;
@@ -30,12 +30,14 @@ class AbstractWordleGame : public IWordleGame<T> {
 
     public:
     /**
-     * @brief 
+     * @brief Constructs a new Wordle game with the given allowed words, max guesses, and using 
+     * the given word provider to generate the answer.
      * 
-     * @param allowedWords 
-     * @param wordProvider 
+     * @param allowedWords the list of allowed words
+     * @param wordProvider the word provider to use to generate the answer
+     * @param maxGuesses the maximum number of guesses allowed
      */
-    virtual AbstractWordleGame(const std::vector<std::string> allowedWords, const IWordProvider& wordProvider, int maxGuesses);
+    AbstractWordleGame(const std::vector<std::string> allowedWords, const IWordProvider& wordProvider, int maxGuesses);
 
     /**
      * @brief Provides a guess for the game and returns the edit distance between the guess and the answer.
@@ -60,3 +62,5 @@ class AbstractWordleGame : public IWordleGame<T> {
     virtual WordleGameState getGameState() const override;
 
 };
+
+#include "../../../src/models/games/AbstractWordleGame.tpp"

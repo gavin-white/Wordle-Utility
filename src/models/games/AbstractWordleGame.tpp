@@ -1,3 +1,5 @@
+#pragma once
+
 #include "models/games/AbstractWordleGame.hpp"
 
 template <typename T>

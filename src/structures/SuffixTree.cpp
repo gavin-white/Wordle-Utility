@@ -17,6 +17,7 @@ SuffixTree* SuffixTree::buildTree(std::vector<std::string> words) {
         reversedWords.push_back(word);
     }
     PrefixTree* delegate = PrefixTree::buildTree(reversedWords);
+    return new SuffixTree(delegate);
 }
 
 bool SuffixTree::isSuffix(std::string suffix) {

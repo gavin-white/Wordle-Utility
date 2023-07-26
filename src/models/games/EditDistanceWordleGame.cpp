@@ -23,12 +23,14 @@ int EditDistanceWordleGame::editDistance(const std::string& str1, const std::str
         }
     }
 
+    int result = matrix[str1.size()][str2.size()];
+
     for (unsigned int i = 0; i <= str1.size(); i++) {
         delete[] matrix[i];
     }
     delete[] matrix;
     
-    return matrix[str1.size()][str2.size()];
+    return result;
 }
 
 int EditDistanceWordleGame::calculateFeedback(std::string guess) const {

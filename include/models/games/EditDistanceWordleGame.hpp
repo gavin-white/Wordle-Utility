@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "IWordProvider.hpp"
+#include "models/IWordProvider.hpp"
 #include "IWordleGame.hpp"
 #include "AbstractWordleGame.hpp"
 
@@ -21,6 +21,8 @@ class EditDistanceWordleGame : public AbstractWordleGame<int> {
     virtual int calculateFeedback(std::string guess) const override;
 
     public:
+    using AbstractWordleGame::AbstractWordleGame;
+
     /**
      * @brief Calculates the edit distance between two strings.
      * 

@@ -9,7 +9,7 @@
  * @brief A tree structure that can be used to efficiently find words that contain a given suffix.
  */
 class PrefixTreeNode {
-    protected:
+    private:
     std::unordered_map<char, PrefixTreeNode*> children;
     std::string wordEnd;
 

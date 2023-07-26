@@ -1,6 +1,20 @@
-#include <LevenshteinTree.hpp>
+#include "structures/LevenshteinTree.hpp"
 
-void LevenshteinTree::levenshteinDfs(PrefixTreeNode* node, const std::string& word, char letter, std::vector<int>& prevRow, std::unordered_map<int, int>& distances, std::unordered_map<std::string, int>& frequencies) {
+LevenshteinTree::LevenshteinTree(PrefixTree* delegate) {
+    this->delegate = delegate;
+}
+
+LevenshteinTree::~LevenshteinTree() {
+    delete delegate;
+}
+
+LevenshteinTree* LevenshteinTree::buildTree(std::vector<std::string> words) {
+    PrefixTree* delegate = PrefixTree::buildTree(words);
+    return new LevenshteinTree(delegate);
+}
+
+void LevenshteinTree::levenshteinDfs(PrefixTreeNode* node, const std::string& word, char letter,
+ std::vector<int>& prevRow, std::unordered_map<int, int>& distances, std::unordered_map<std::string, int>& frequencies) {
     std::vector<int> currRow(word.size() + 1);
     currRow[0] = prevRow[0] + 1;
     for (unsigned int i = 1; i < word.size() + 1; i++) {
@@ -30,7 +44,7 @@ LevenshteinTree::LevenshteinTuple LevenshteinTree::levenshteinDistance(std::stri
         firstRow[i] = i;
     }
 
-    for (auto& child : this->children) {
+    for (auto& child : this->delegate->children) {
         levenshteinDfs(child.second, word, child.first, firstRow, frequencies, distances);
     }
 

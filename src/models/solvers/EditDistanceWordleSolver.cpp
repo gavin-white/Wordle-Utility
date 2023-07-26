@@ -2,9 +2,9 @@
 #include <iostream>
 #include <algorithm>
 #include <numeric>
-#include "models/EditDistanceWordleSolver.hpp"
-#include "models/EditDistanceWordle.hpp"
-#include "structures/PrefixTree.hpp"
+#include "models/solvers/EditDistanceWordleSolver.hpp"
+#include "models/games/EditDistanceWordleGame.hpp"
+#include "structures/LevenshteinTree.hpp"
 
 EditDistanceWordleSolver::EditDistanceWordleSolver() {
 
@@ -28,17 +28,17 @@ void EditDistanceWordleSolver::takeGuess(std::string guess, const int feedback) 
     // }
 
 
-    PrefixTree tree = PrefixTree(availableOptions);
-    std::unordered_map<std::string, PrefixTree::LevenshteinTuple> tuples;
-    for (std::string& word : availableOptions) {
-        tuples[word] =  tree.levenshteinDistance(word);
-    }
+    LevenshteinTree* tree = LevenshteinTree::buildTree(availableOptions);
+    // std::unordered_map<std::string, LevenshteinTree::LevenshteinTuple> tuples;
+    // for (std::string& word : availableOptions) {
+    //     tuples[word] =  tree->levenshteinDistance(word);
+    // }
 
-    // tree.levenshteinDistance(guess);
-
+    tree->levenshteinDistance(guess);
+    delete tree;
 
     // for (std::string& word2 : availableOptions) {
-    //     distances.push_back(EditDistanceWordle::editDistance(guess, word2));
+    //     distances.push_back(EditDistanceWordleGame::editDistance(guess, word2));
     // }
     
     // mean of distances values

@@ -1,10 +1,10 @@
 #include <iostream>
-#include "models/EditDistanceWordle.hpp"
+#include "models/games/EditDistanceWordleGame.hpp"
 #include "utilities/FileReader.hpp"
 #include "models/IWordProvider.hpp"
 #include "models/BasicWordProvider.hpp"
 #include "models/RandomWordProvider.hpp"
-#include "models/EditDistanceWordleSolver.hpp"
+#include "models/solvers/EditDistanceWordleSolver.hpp"
 
 void wordleUtilController(std::string filename);
 
@@ -20,13 +20,13 @@ int main (int argc, char * argv[]) {
     }
 
     auto v = FileReader::readWords(argv[1], '\n');
-    EditDistanceWordle wordle = EditDistanceWordle(v, RandomWordProvider());
+    EditDistanceWordleGame wordle = EditDistanceWordleGame(v, RandomWordProvider(), 10);
     EditDistanceWordleSolver solver = EditDistanceWordleSolver(v);
     while(1) {
         std::cout << "Guess a word:\n";
         std::string line;
         getline(std::cin, line);
-        std::cout << "Edit distance from answer: " << wordle.guess(line) << std::endl;
+        std::cout << "Edit distance from answer: " << wordle.makeGuess(line) << std::endl;
         solver.takeGuess(line, 0);
 
     }
